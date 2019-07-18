@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello TreeController!{% endblock %}
+
+{% block body %}
+    <div>
+        <textarea placeholder="JSON" id="json" style="width: 100%;" rows="20"></textarea>
+        <br />
+        <button onclick="send()">Send</button>
+        <br />
+        <textarea placeholder="Result" id="result" style="width: 100%;" rows="10"></textarea>
+    </div>
+
+    <script>
+
+        const tree = {
+            id: 1,
+            name: 'Category1',
+            children: [
+                {
+                    id: 2,
+                    name: 'Category2',
+                    children: [
+                        {
+                            id: 3,
+                            name: 'Category3',
+                            children: null
+                        },
+                        {
+                            id: 4,
+                            name: 'Category4',
+                            children: null
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const resultRef = document.getElementById("result");
+        const jsonRef = document.getElementById("json");
+        jsonRef.value = JSON.stringify(tree, null, 4);
+
+        function send() {
+            (async () => {
+                const rawResponse = await fetch('{{ path('tree-save') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: jsonRef.value
+                });
+
+                resultRef.value = await rawResponse.text();
+            })();
+        }
+    </script>
+{% endblock %}
